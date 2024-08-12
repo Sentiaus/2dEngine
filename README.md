@@ -8,3 +8,9 @@ I'm sort of following a guide/ sort of not, just using it to establish base line
 Learn more about javascript itself.
 Remember some physics and learn to implement math and physics in code.
 Hopefully make something fun out of the engine that's created.
+
+## To Run
+```
+Install the extension Live Server.
+Right click index.html and run as Live Server.
+```
