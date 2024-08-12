@@ -96,6 +96,7 @@ class Balls{
             //draw velocity and acceleration directions
             ball.drawPath();
             //O(n^2) inefficient
+            // Gonna try to find a way to make this more efficient
             for(let i = index+1; i<this.stack.length; i++){
                 Balls.checkCollision(this.stack[index], this.stack[i])
             }
