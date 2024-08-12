@@ -105,7 +105,7 @@ class Balls{
     }
     static checkCollision = (b1,b2) => {
         console.log("Collision entered")
-        // If the radius of the balls are
+        // If the sum of the radii is greater than or equal to the distance between the centers.
         if(b1.r + b2.r >= b2.pos.subtract(b1.pos).magnitude()){
             Balls.penetrationDepth(b1,b2)
             return true
@@ -158,12 +158,19 @@ class Ball{
         this.acc.unitVector().drawVector(this.pos.x, this.pos.y, 50, "green")
         //Draw path from center of ball to direction of velocity
         // this.vl.drawVector(this.x, this.y, 10, "blue")
-        this.vl.drawVector(this.pos.x, this.pos.y, 10, "blue")
+        this.vl.drawVector(this.pos.x, this.pos.y, this.r, "blue")
         this.acc.normal().drawVector(this.pos.x, this.pos.y, 50, "red")
-        ctx.beginPath();
-        ctx.arc(500, 500, 50, 0, Math.PI*2);
-        ctx.stroke();
-        ctx.closePath();
+        
+        if(this.player){
+            let corner = {x:700, y:700}
+            ctx.beginPath();
+            ctx.arc(corner.x, corner.y, this.r, 0, Math.PI*2);
+            ctx.stroke();
+            ctx.closePath();
+            this.vl.drawVector(corner.x, corner.y, this.r, "blue")
+            this.acc.unitVector().drawVector(corner.x, corner.y, this.r, "green")
+        }
+        
     }
 }
 
@@ -239,17 +246,25 @@ keyControl = (b) => {
     if(keys.W){
         b.r++
     }
+    if(keys.S){
+        if(b.r > 0){
+            b.r--
+        }  
+    }
+    if(keys.A){
+        b.acceleration -= 0.001
+    }
+    if(keys.D){
+        b.acceleration += 0.001
+    }
+
     if(!keys.UP && !keys.DOWN){
         b.acc.y = 0
     }
     if(!keys.LEFT && !keys.RIGHT){
         b.acc.x = 0
     }
-    if(keys.S){
-        if(b.r > 0){
-            b.r--
-        }  
-    }
+
 
     // if(keys.A){
         
@@ -269,41 +284,50 @@ keyControl = (b) => {
 
 };
 
-score = (b) =>{
-    let score = document.getElementById("speed");
-    score.textContent = `Position: ${round(b.pos.x,2)}, ${round(b.pos.y,2)}, X Velocity: ${Math.round(b.vl.x)}, Y Velocity: ${Math.round(b.vl.y)}, Size: ${b.r*2}`
+class Information{
+    constructor(){
+        this.score = document.getElementById("speed");
+        this.info = document.getElementById("info")
+    }
+    // Will change to static class later.
+    displayBallInfo = (b) =>{
+        this.score.textContent = `Position: ${round(b.pos.x,2)}, ${round(b.pos.y,2)}, Acceleration Value: ${round(b.acceleration, 3)}, Size: ${b.r*2}`
+    }
+
+    displayRules = () =>{
+        this.info.textContent = "Arrow Keys to move, W to grow, S to shrink, A to decrease acceleration, D to increase acceleration"
+    }
 }
 
 
 
-round = (number, precision) => {
+round = (number, precision = 0) => {
     let num = number * 10**precision
     return Math.round(num) / 10**precision
 }
 
+main = () => {
+    
+}
+
 let myBalls = new Balls()
-let ball1 = new Ball(40, 40, 20, undefined, true, "blue",myBalls,false, 2);
-let ball2 = new Ball(300,400, 50, undefined, true, "black", myBalls,true)
+let ball1 = new Ball(40, 40, 20, undefined, true, "blue",myBalls,true);
+let ball2 = new Ball(300,400, 50, undefined, true, "black", myBalls)
 let ball3 = new Ball(300,400, 50, undefined, true, "black", myBalls)
 let ball4 = new Ball(300,400, 50, undefined, true, "black", myBalls)
 let ball5 = new Ball(300,400, 50, undefined, true, "black", myBalls)
 let ball6 = new Ball(300,400, 50, undefined, true, "black", myBalls)
 
-// setInterval(function(){
-//     ctx.clearRect(0,0, canvas.clientWidth, canvas.clientHeight)
-//     move()
-//     grow()
-//     drawBall(x, y, r); 
-//     console.log(r);
-// }, 1000/160); 
 
+const myInfo = new Information() 
+myInfo.displayRules()
 mainLoop = () => {
     ctx.clearRect(0,0, canvas.clientWidth, canvas.clientHeight)
     
     myBalls.drawBalls()
+    myInfo.displayBallInfo(ball2)
     requestAnimationFrame(mainLoop);
     
-    score(ball1);
 }
 
 console.log(ball1)
